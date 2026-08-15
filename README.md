@@ -65,8 +65,11 @@ K-Means Clustering
 | ReportLab | PDF report generation |
 | OpenPyXL | Excel file processing |
 
+---
+
 ## 📂 Project Structure
 
+```
 IntelliData-AI/
 │
 ├── app.py
@@ -110,6 +113,10 @@ IntelliData-AI/
     ├── preprocessing.py
     ├── regression.py
     └── report_generator.py
+
+```
+
+---
 
 ## ⚙️ Installation
 
