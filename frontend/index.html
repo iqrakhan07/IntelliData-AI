@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>IntelliData AI</title>
 
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/style.css">
 </head>
 
 <body>
@@ -16,8 +17,8 @@
         <!-- SIDEBAR -->
         <aside class="sidebar">
 
-            <div class="logo">
-                <div class="logo-icon">🤖</div>
+            <div class="brand">
+                <div class="brand-icon">🤖</div>
 
                 <div>
                     <h2>IntelliData</h2>
@@ -27,17 +28,17 @@
 
             <nav>
 
-                <a href="#" class="nav-item active">
+                <a href="#dashboard" class="nav-link active">
                     <span>📊</span>
                     Dashboard
                 </a>
 
-                <a href="#prediction" class="nav-item">
+                <a href="#prediction" class="nav-link">
                     <span>🔮</span>
                     Prediction
                 </a>
 
-                <a href="#model" class="nav-item">
+                <a href="#model" class="nav-link">
                     <span>🤖</span>
                     Model
                 </a>
@@ -45,8 +46,17 @@
             </nav>
 
             <div class="sidebar-bottom">
-                <p>Machine Learning</p>
-                <strong>IntelliData AI v1.0</strong>
+
+                <div class="version">
+                    <span>IntelliData AI</span>
+                    <strong>v1.0</strong>
+                </div>
+
+                <div class="api-indicator">
+                    <span id="apiDot"></span>
+                    <span id="apiText">Checking API...</span>
+                </div>
+
             </div>
 
         </aside>
@@ -59,76 +69,153 @@
             <header class="topbar">
 
                 <div>
-                    <h1>Dashboard</h1>
+                    <h1>Machine Learning</h1>
                     <p>Smart Data Analytics & Machine Learning</p>
                 </div>
 
-                <div class="status">
-                    <span class="status-dot"></span>
-                    API Connected
+                <div class="status-badge">
+                    <span id="topStatusDot"></span>
+                    <span id="topStatus">API Checking...</span>
                 </div>
 
             </header>
 
 
-            <!-- KPI CARDS -->
-            <section class="cards">
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="page-section">
 
-                <div class="stat-card">
+                <div class="section-heading">
+                    <div>
+                        <h2>Dashboard</h2>
+                        <p>Overview of your IntelliData AI system</p>
+                    </div>
+                </div>
 
-                    <div class="stat-icon blue">
-                        📁
+
+                <!-- KPI CARDS -->
+                <div class="cards">
+
+                    <div class="card stat-card">
+
+                        <div class="stat-icon blue">
+                            📁
+                        </div>
+
+                        <div>
+                            <span class="stat-label">Platform</span>
+                            <h3>IntelliData AI</h3>
+                            <p>Data Intelligence</p>
+                        </div>
+
                     </div>
 
-                    <div>
-                        <p>Platform</p>
-                        <h3>IntelliData AI</h3>
+
+                    <div class="card stat-card">
+
+                        <div class="stat-icon purple">
+                            🤖
+                        </div>
+
+                        <div>
+                            <span class="stat-label">Model</span>
+                            <h3 id="dashboardModel">Loading...</h3>
+                            <p>Machine Learning</p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="card stat-card">
+
+                        <div class="stat-icon green">
+                            🎯
+                        </div>
+
+                        <div>
+                            <span class="stat-label">Prediction</span>
+                            <h3>Ready</h3>
+                            <p>Prediction Engine</p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="card stat-card">
+
+                        <div class="stat-icon orange">
+                            ⚡
+                        </div>
+
+                        <div>
+                            <span class="stat-label">API Status</span>
+                            <h3 id="dashboardApi">Checking...</h3>
+                            <p>Flask REST API</p>
+                        </div>
+
                     </div>
 
                 </div>
 
 
-                <div class="stat-card">
+                <!-- OVERVIEW -->
+                <div class="grid-two">
 
-                    <div class="stat-icon purple">
-                        🤖
+                    <div class="card overview-card">
+
+                        <div class="card-header">
+
+                            <div>
+                                <h3>IntelliData AI</h3>
+                                <p>Intelligent Prediction Platform</p>
+                            </div>
+
+                            <div class="large-icon">
+                                🧠
+                            </div>
+
+                        </div>
+
+                        <p class="description">
+                            IntelliData AI combines machine learning,
+                            predictive analytics and an interactive
+                            web interface to generate intelligent
+                            predictions from structured data.
+                        </p>
+
+                        <div class="features">
+
+                            <div>✓ Machine Learning</div>
+                            <div>✓ Classification</div>
+                            <div>✓ Probability Analysis</div>
+                            <div>✓ REST API</div>
+
+                        </div>
+
                     </div>
 
-                    <div>
-                        <p>Model</p>
-                        <h3 id="model-name">
-                            Loading...
-                        </h3>
-                    </div>
 
-                </div>
+                    <div class="card quick-card">
 
+                        <h3>Quick Actions</h3>
 
-                <div class="stat-card">
+                        <a href="#prediction" class="quick-action">
+                            <span>🔮</span>
+                            <div>
+                                <strong>Make Prediction</strong>
+                                <small>Predict passenger survival</small>
+                            </div>
+                            <span>→</span>
+                        </a>
 
-                    <div class="stat-icon green">
-                        🎯
-                    </div>
+                        <a href="#model" class="quick-action">
+                            <span>🤖</span>
+                            <div>
+                                <strong>View Model</strong>
+                                <small>Model information & features</small>
+                            </div>
+                            <span>→</span>
+                        </a>
 
-                    <div>
-                        <p>Prediction</p>
-                        <h3>Ready</h3>
-                    </div>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <div class="stat-icon orange">
-                        ⚡
-                    </div>
-
-                    <div>
-                        <p>API Status</p>
-                        <h3 id="api-status">
-                            Checking...
-                        </h3>
                     </div>
 
                 </div>
@@ -136,303 +223,322 @@
             </section>
 
 
-            <!-- PREDICTION SECTION -->
-            <section
-                class="content-card"
-                id="prediction"
-            >
+            <!-- PREDICTION -->
+            <section id="prediction" class="page-section">
 
-                <div class="section-header">
+                <div class="section-heading">
 
                     <div>
                         <h2>🔮 Passenger Prediction</h2>
 
                         <p>
-                            Enter passenger information
-                            to generate a survival prediction.
+                            Enter passenger information to generate
+                            a Titanic survival prediction.
                         </p>
                     </div>
 
                 </div>
 
 
-                <form id="prediction-form">
+                <div class="prediction-layout">
 
-                    <div class="form-grid">
+                    <!-- FORM -->
+                    <div class="card prediction-card">
 
-
-                        <!-- Passenger ID -->
-                        <div class="form-group">
-
-                            <label for="PassengerId">
-                                Passenger ID
-                            </label>
-
-                            <input
-                                type="number"
-                                id="PassengerId"
-                                value="900"
-                                required
-                            >
-
+                        <div class="card-title">
+                            <h3>Passenger Information</h3>
+                            <span>Required fields</span>
                         </div>
 
 
-                        <!-- Pclass -->
-                        <div class="form-group">
+                        <div class="form-grid">
 
-                            <label for="Pclass">
-                                Passenger Class
-                            </label>
+                            <div class="form-group">
 
-                            <select
-                                id="Pclass"
-                                required
-                            >
+                                <label>Passenger ID</label>
 
-                                <option value="1">
-                                    1 - First Class
-                                </option>
-
-                                <option value="2">
-                                    2 - Second Class
-                                </option>
-
-                                <option
-                                    value="3"
-                                    selected
+                                <input
+                                    type="number"
+                                    id="PassengerId"
+                                    value="892"
                                 >
-                                    3 - Third Class
-                                </option>
 
-                            </select>
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Passenger Class</label>
+
+                                <select id="Pclass">
+
+                                    <option value="1">
+                                        1 - First Class
+                                    </option>
+
+                                    <option value="2">
+                                        2 - Second Class
+                                    </option>
+
+                                    <option value="3" selected>
+                                        3 - Third Class
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="form-group full">
+
+                                <label>Passenger Name</label>
+
+                                <input
+                                    type="text"
+                                    id="Name"
+                                    value="John Doe"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Gender</label>
+
+                                <select id="Gender">
+
+                                    <option value="male" selected>
+                                        Male
+                                    </option>
+
+                                    <option value="female">
+                                        Female
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Age</label>
+
+                                <input
+                                    type="number"
+                                    id="Age"
+                                    value="30"
+                                    step="0.1"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Siblings / Spouses</label>
+
+                                <input
+                                    type="number"
+                                    id="SibSp"
+                                    value="0"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Parents / Children</label>
+
+                                <input
+                                    type="number"
+                                    id="Parch"
+                                    value="0"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Ticket</label>
+
+                                <input
+                                    type="text"
+                                    id="Ticket"
+                                    value="A/5 21171"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Fare</label>
+
+                                <input
+                                    type="number"
+                                    id="Fare"
+                                    value="7.25"
+                                    step="0.01"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Cabin</label>
+
+                                <input
+                                    type="text"
+                                    id="Cabin"
+                                    value="C85"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label>Embarked</label>
+
+                                <select id="Embarked">
+
+                                    <option value="S" selected>
+                                        Southampton (S)
+                                    </option>
+
+                                    <option value="C">
+                                        Cherbourg (C)
+                                    </option>
+
+                                    <option value="Q">
+                                        Queenstown (Q)
+                                    </option>
+
+                                </select>
+
+                            </div>
 
                         </div>
 
 
-                        <!-- Name -->
+                        <button
+                            class="predict-button"
+                            onclick="makePrediction()"
+                        >
+                            🔮 Make Prediction
+                        </button>
+
                         <div
-                            class="form-group full"
+                            id="predictionError"
+                            class="error-message hidden"
+                        ></div>
+
+                    </div>
+
+
+                    <!-- RESULT -->
+                    <div class="card result-card">
+
+                        <div class="result-header">
+
+                            <div>
+                                <span>Prediction Result</span>
+                                <h3 id="resultTitle">
+                                    Awaiting Prediction
+                                </h3>
+                            </div>
+
+                            <div
+                                id="resultIcon"
+                                class="result-icon"
+                            >
+                                🎯
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            id="resultBox"
+                            class="result-box waiting"
                         >
 
-                            <label for="Name">
-                                Passenger Name
-                            </label>
+                            <div class="result-number">
+                                —
+                            </div>
 
-                            <input
-                                type="text"
-                                id="Name"
-                                value="Test Passenger"
-                                required
-                            >
+                            <p>
+                                Enter passenger information and
+                                click Make Prediction.
+                            </p>
 
                         </div>
 
 
-                        <!-- Gender -->
-                        <div class="form-group">
+                        <div
+                            id="confidenceSection"
+                            class="confidence-section hidden"
+                        >
 
-                            <label for="Gender">
-                                Gender
-                            </label>
+                            <div class="confidence-header">
 
-                            <select
-                                id="Gender"
-                                required
-                            >
+                                <span>Confidence</span>
 
-                                <option
-                                    value="male"
-                                    selected
-                                >
-                                    Male
-                                </option>
+                                <strong id="confidence">
+                                    0%
+                                </strong>
 
-                                <option value="female">
-                                    Female
-                                </option>
+                            </div>
 
-                            </select>
+                            <div class="progress">
 
-                        </div>
+                                <div
+                                    id="confidenceBar"
+                                    class="progress-bar"
+                                ></div>
 
-
-                        <!-- Age -->
-                        <div class="form-group">
-
-                            <label for="Age">
-                                Age
-                            </label>
-
-                            <input
-                                type="number"
-                                id="Age"
-                                value="25"
-                                min="0"
-                                max="100"
-                                step="0.1"
-                                required
-                            >
+                            </div>
 
                         </div>
 
 
-                        <!-- SibSp -->
-                        <div class="form-group">
+                        <div
+                            id="probabilitySection"
+                            class="probability-section hidden"
+                        >
 
-                            <label for="SibSp">
-                                Siblings / Spouses
-                            </label>
+                            <h4>Prediction Probability</h4>
 
-                            <input
-                                type="number"
-                                id="SibSp"
-                                value="0"
-                                min="0"
-                                required
-                            >
-
-                        </div>
-
-
-                        <!-- Parch -->
-                        <div class="form-group">
-
-                            <label for="Parch">
-                                Parents / Children
-                            </label>
-
-                            <input
-                                type="number"
-                                id="Parch"
-                                value="0"
-                                min="0"
-                                required
-                            >
-
-                        </div>
-
-
-                        <!-- Ticket -->
-                        <div class="form-group">
-
-                            <label for="Ticket">
-                                Ticket
-                            </label>
-
-                            <input
-                                type="text"
-                                id="Ticket"
-                                value="TEST123"
-                                required
-                            >
-
-                        </div>
-
-
-                        <!-- Fare -->
-                        <div class="form-group">
-
-                            <label for="Fare">
-                                Fare
-                            </label>
-
-                            <input
-                                type="number"
-                                id="Fare"
-                                value="8.05"
-                                min="0"
-                                step="0.01"
-                                required
-                            >
-
-                        </div>
-
-
-                        <!-- Cabin -->
-                        <div class="form-group">
-
-                            <label for="Cabin">
-                                Cabin
-                            </label>
-
-                            <input
-                                type="text"
-                                id="Cabin"
-                                value="Unknown"
-                            >
-
-                        </div>
-
-
-                        <!-- Embarked -->
-                        <div class="form-group">
-
-                            <label for="Embarked">
-                                Embarked
-                            </label>
-
-                            <select
-                                id="Embarked"
-                                required
-                            >
-
-                                <option
-                                    value="S"
-                                    selected
-                                >
-                                    Southampton (S)
-                                </option>
-
-                                <option value="C">
-                                    Cherbourg (C)
-                                </option>
-
-                                <option value="Q">
-                                    Queenstown (Q)
-                                </option>
-
-                            </select>
+                            <div id="probabilityList"></div>
 
                         </div>
 
                     </div>
 
-
-                    <button
-                        type="submit"
-                        class="predict-btn"
-                    >
-                        🔮 Make Prediction
-                    </button>
-
-                </form>
-
-
-                <!-- RESULT -->
-                <div
-                    id="result"
-                    class="result hidden"
-                ></div>
+                </div>
 
             </section>
 
 
-            <!-- MODEL SECTION -->
-            <section
-                class="content-card"
-                id="model"
-            >
+            <!-- MODEL -->
+            <section id="model" class="page-section">
 
-                <div class="section-header">
+                <div class="section-heading">
 
                     <div>
+
                         <h2>🤖 Model Information</h2>
 
                         <p>
-                            Information about the currently
-                            loaded machine learning model.
+                            Information about the currently loaded
+                            machine learning model.
                         </p>
+
                     </div>
 
                 </div>
@@ -440,35 +546,60 @@
 
                 <div class="model-grid">
 
-                    <div class="model-item">
+                    <div class="card model-info">
 
                         <span>Model Type</span>
 
-                        <strong id="model-type">
+                        <h3 id="modelType">
                             Loading...
-                        </strong>
+                        </h3>
 
                     </div>
 
 
-                    <div class="model-item">
+                    <div class="card model-info">
 
                         <span>Prediction Probability</span>
 
-                        <strong id="probability-status">
+                        <h3 id="modelProbability">
                             Loading...
-                        </strong>
+                        </h3>
 
                     </div>
 
 
-                    <div class="model-item">
+                    <div class="card model-info">
 
-                        <span>Features</span>
+                        <span>API Status</span>
 
-                        <strong id="feature-count">
-                            Loading...
-                        </strong>
+                        <h3 id="modelApiStatus">
+                            Checking...
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card features-card">
+
+                    <div class="card-title">
+
+                        <div>
+                            <h3>Model Features</h3>
+                            <span>Features used by the trained model</span>
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="featureList"
+                        class="feature-list"
+                    >
+
+                        <span class="loading">
+                            Loading model features...
+                        </span>
 
                     </div>
 
@@ -495,7 +626,8 @@
     </div>
 
 
-    <script src="/static/script.js"></script>
+    <script src="/script.js"></script>
 
 </body>
+
 </html>

@@ -1,460 +1,738 @@
-const form =
-    document.getElementById("prediction-form");
-
-const resultBox =
-    document.getElementById("result");
+const API_BASE = window.location.origin;
 
 
-// ==========================================
-// LOAD MODEL INFORMATION
-// ==========================================
+/* ==========================================
+   API REQUEST
+   ========================================== */
 
-async function loadModelInformation() {
+async function apiRequest(endpoint, options = {}) {
 
-    try {
+    const response = await fetch(
+        `${API_BASE}${endpoint}`,
+        options
+    );
 
-        const response =
-            await fetch("/model-details");
+    const data = await response.json();
 
-        const data =
-            await response.json();
-
-
-        if (
-            response.ok &&
-            data.status === "success"
-        ) {
-
-            document.getElementById(
-                "model-type"
-            ).textContent =
-                data.model_type || "Unknown";
-
-
-            document.getElementById(
-                "model-name"
-            ).textContent =
-                "best_model.pkl";
-
-
-            document.getElementById(
-                "probability-status"
-            ).textContent =
-                data.has_predict_proba
-                    ? "Available"
-                    : "Not Available";
-
-
-            document.getElementById(
-                "feature-count"
-            ).textContent =
-                data.features
-                    ? `${data.features.length} Features`
-                    : "Unknown";
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Model information error:",
-            error
+    if (!response.ok) {
+        throw new Error(
+            data.message || "API request failed."
         );
-
-        document.getElementById(
-            "model-type"
-        ).textContent =
-            "Unavailable";
-
-        document.getElementById(
-            "model-name"
-        ).textContent =
-            "Unavailable";
     }
+
+    return data;
 }
 
 
-// ==========================================
-// CHECK API STATUS
-// ==========================================
+/* ==========================================
+   API STATUS
+   ========================================== */
 
-async function checkAPIStatus() {
+async function checkAPI() {
 
     try {
 
-        const response =
-            await fetch("/health");
+        const data = await apiRequest("/health");
 
-        const data =
-            await response.json();
+        const online =
+            data.status === "healthy";
 
+        const dot =
+            document.getElementById("apiDot");
 
-        const status =
+        const topDot =
+            document.getElementById("topStatusDot");
+
+        const text =
+            document.getElementById("apiText");
+
+        const topStatus =
+            document.getElementById("topStatus");
+
+        const dashboardApi =
+            document.getElementById("dashboardApi");
+
+        const modelApiStatus =
             document.getElementById(
-                "api-status"
+                "modelApiStatus"
             );
 
 
-        if (
-            response.ok &&
-            data.status === "healthy"
-        ) {
+        if (online) {
 
-            status.textContent =
-                data.model_available
-                    ? "Online"
-                    : "No Model";
+            dot.classList.add(
+                "api-online"
+            );
+
+            topDot.classList.add(
+                "api-online"
+            );
+
+            text.textContent =
+                "API Connected";
+
+            topStatus.textContent =
+                "API Connected";
+
+            dashboardApi.textContent =
+                "Connected";
+
+            modelApiStatus.textContent =
+                "Connected";
 
         } else {
 
-            status.textContent =
-                "Offline";
+            throw new Error(
+                "API unavailable"
+            );
+
         }
 
     } catch (error) {
 
-        document.getElementById(
-            "api-status"
-        ).textContent =
+        document
+            .getElementById("apiDot")
+            .classList.add(
+                "api-offline"
+            );
+
+        document
+            .getElementById("topStatusDot")
+            .classList.add(
+                "api-offline"
+            );
+
+        document
+            .getElementById("apiText")
+            .textContent =
+            "API Offline";
+
+        document
+            .getElementById("topStatus")
+            .textContent =
+            "API Offline";
+
+        document
+            .getElementById("dashboardApi")
+            .textContent =
+            "Offline";
+
+        document
+            .getElementById("modelApiStatus")
+            .textContent =
             "Offline";
     }
 }
 
 
-// ==========================================
-// PREDICTION
-// ==========================================
+/* ==========================================
+   LOAD MODEL DETAILS
+   ========================================== */
 
-form.addEventListener(
-    "submit",
-    async function (event) {
+async function loadModelDetails() {
 
-        event.preventDefault();
+    try {
 
-
-        const button =
-            form.querySelector(
-                ".predict-btn"
+        const data =
+            await apiRequest(
+                "/model-details"
             );
 
 
-        button.disabled = true;
-
-        button.textContent =
-            "⏳ Making Prediction...";
-
-
-        resultBox.className =
-            "result loading";
+        const modelType =
+            data.model_type ||
+            "Unknown";
 
 
-        resultBox.innerHTML = `
-            <h3>⏳ Processing Prediction</h3>
-            <p>
-                Please wait while IntelliData AI
-                processes the passenger information.
-            </p>
-        `;
+        document.getElementById(
+            "dashboardModel"
+        ).textContent =
+            modelType;
 
 
-        // --------------------------------------
-        // INPUT DATA
-        // --------------------------------------
+        document.getElementById(
+            "modelType"
+        ).textContent =
+            modelType;
 
-        const data = {
 
-            PassengerId: Number(
+        document.getElementById(
+            "modelProbability"
+        ).textContent =
+            data.has_predict_proba
+                ? "Available"
+                : "Not Available";
+
+
+        loadFeatures(
+            data.features
+        );
+
+
+    } catch (error) {
+
+        document.getElementById(
+            "dashboardModel"
+        ).textContent =
+            "Unavailable";
+
+
+        document.getElementById(
+            "modelType"
+        ).textContent =
+            "Unavailable";
+
+
+        document.getElementById(
+            "modelProbability"
+        ).textContent =
+            "Unavailable";
+
+
+        document.getElementById(
+            "featureList"
+        ).innerHTML =
+            `<span class="loading">
+                Unable to load model information.
+            </span>`;
+    }
+}
+
+
+/* ==========================================
+   LOAD FEATURES
+   ========================================== */
+
+async function loadFeatures(
+    suppliedFeatures = null
+) {
+
+    try {
+
+        let features =
+            suppliedFeatures;
+
+
+        if (!features) {
+
+            const data =
+                await apiRequest(
+                    "/features"
+                );
+
+            features =
+                data.features;
+        }
+
+
+        const container =
+            document.getElementById(
+                "featureList"
+            );
+
+
+        if (
+            !features ||
+            features.length === 0
+        ) {
+
+            container.innerHTML =
+                `<span class="loading">
+                    No model features available.
+                </span>`;
+
+            return;
+        }
+
+
+        container.innerHTML =
+            features
+                .map(
+                    feature =>
+                        `<span class="feature">
+                            ${escapeHTML(feature)}
+                        </span>`
+                )
+                .join("");
+
+    } catch (error) {
+
+        document.getElementById(
+            "featureList"
+        ).innerHTML =
+            `<span class="loading">
+                Unable to load features.
+            </span>`;
+    }
+}
+
+
+/* ==========================================
+   MAKE PREDICTION
+   ========================================== */
+
+async function makePrediction() {
+
+    const errorBox =
+        document.getElementById(
+            "predictionError"
+        );
+
+    errorBox.classList.add(
+        "hidden"
+    );
+
+
+    const payload = {
+
+        PassengerId:
+            Number(
                 document.getElementById(
                     "PassengerId"
                 ).value
             ),
 
-            Pclass: Number(
+        Pclass:
+            Number(
                 document.getElementById(
                     "Pclass"
                 ).value
             ),
 
-            Name:
-                document.getElementById(
-                    "Name"
-                ).value,
+        Name:
+            document.getElementById(
+                "Name"
+            ).value,
 
-            // IMPORTANT:
-            // Your dataset uses Gender
-            Gender:
-                document.getElementById(
-                    "Gender"
-                ).value,
+        Gender:
+            document.getElementById(
+                "Gender"
+            ).value,
 
-            Age: Number(
+        Age:
+            Number(
                 document.getElementById(
                     "Age"
                 ).value
             ),
 
-            SibSp: Number(
+        SibSp:
+            Number(
                 document.getElementById(
                     "SibSp"
                 ).value
             ),
 
-            Parch: Number(
+        Parch:
+            Number(
                 document.getElementById(
                     "Parch"
                 ).value
             ),
 
-            Ticket:
-                document.getElementById(
-                    "Ticket"
-                ).value,
+        Ticket:
+            document.getElementById(
+                "Ticket"
+            ).value,
 
-            Fare: Number(
+        Fare:
+            Number(
                 document.getElementById(
                     "Fare"
                 ).value
             ),
 
-            Cabin:
-                document.getElementById(
-                    "Cabin"
-                ).value,
+        Cabin:
+            document.getElementById(
+                "Cabin"
+            ).value,
 
-            Embarked:
-                document.getElementById(
-                    "Embarked"
-                ).value
-        };
+        Embarked:
+            document.getElementById(
+                "Embarked"
+            ).value
+    };
 
 
-        console.log(
-            "Prediction input:",
+    const button =
+        document.querySelector(
+            ".predict-button"
+        );
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "⏳ Generating Prediction...";
+
+
+    try {
+
+        const data =
+            await apiRequest(
+                "/predict",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            payload
+                        )
+                }
+            );
+
+
+        displayPrediction(
             data
         );
 
 
-        // --------------------------------------
-        // CALL FLASK API
-        // --------------------------------------
+    } catch (error) {
 
-        try {
+        errorBox.textContent =
+            `Prediction error: ${error.message}`;
 
-            const response =
-                await fetch(
-                    "/predict",
-                    {
-                        method: "POST",
+        errorBox.classList.remove(
+            "hidden"
+        );
 
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
+    } finally {
 
-                        body:
-                            JSON.stringify(data)
-                    }
-                );
+        button.disabled = false;
+
+        button.textContent =
+            "🔮 Make Prediction";
+    }
+}
 
 
-            const result =
-                await response.json();
+/* ==========================================
+   DISPLAY PREDICTION
+   ========================================== */
+
+function displayPrediction(data) {
+
+    const result =
+        String(
+            data.prediction
+        );
 
 
-            console.log(
-                "Prediction response:",
-                result
+    const resultBox =
+        document.getElementById(
+            "resultBox"
+        );
+
+    const resultTitle =
+        document.getElementById(
+            "resultTitle"
+        );
+
+    const resultIcon =
+        document.getElementById(
+            "resultIcon"
+        );
+
+
+    let isSurvived =
+        result === "1";
+
+
+    let isNotSurvived =
+        result === "0";
+
+
+    resultBox.classList.remove(
+        "waiting",
+        "success",
+        "danger"
+    );
+
+
+    if (isSurvived) {
+
+        resultBox.classList.add(
+            "success"
+        );
+
+        resultBox.innerHTML = `
+            <div class="result-number">
+                Survived
+            </div>
+
+            <p>
+                🎉 Passenger is likely to survive.
+            </p>
+        `;
+
+        resultTitle.textContent =
+            "Prediction Generated";
+
+        resultIcon.textContent =
+            "🎉";
+
+    } else if (isNotSurvived) {
+
+        resultBox.classList.add(
+            "danger"
+        );
+
+        resultBox.innerHTML = `
+            <div class="result-number">
+                Not Survived
+            </div>
+
+            <p>
+                Passenger is likely not to survive.
+            </p>
+        `;
+
+        resultTitle.textContent =
+            "Prediction Generated";
+
+        resultIcon.textContent =
+            "⚠️";
+
+    } else {
+
+        resultBox.classList.add(
+            "success"
+        );
+
+        resultBox.innerHTML = `
+            <div class="result-number">
+                ${escapeHTML(result)}
+            </div>
+
+            <p>
+                Prediction generated successfully.
+            </p>
+        `;
+
+        resultTitle.textContent =
+            "Prediction Generated";
+
+        resultIcon.textContent =
+            "🎯";
+    }
+
+
+    /* ------------------------------------------
+       CONFIDENCE
+       ------------------------------------------ */
+
+    const confidenceSection =
+        document.getElementById(
+            "confidenceSection"
+        );
+
+
+    if (
+        data.confidence !== undefined &&
+        data.confidence !== null
+    ) {
+
+        const confidence =
+            Number(
+                data.confidence
             );
 
 
-            if (
-                !response.ok ||
-                result.status === "error"
-            ) {
-
-                throw new Error(
-                    result.message ||
-                    "Prediction failed."
-                );
-            }
+        document.getElementById(
+            "confidence"
+        ).textContent =
+            `${confidence.toFixed(2)}%`;
 
 
-            // ----------------------------------
-            // PREDICTION
-            // ----------------------------------
-
-            const prediction =
-                String(
-                    result.prediction
-                );
-
-
-            let predictionText;
-
-            let resultClass;
+        document.getElementById(
+            "confidenceBar"
+        ).style.width =
+            `${Math.min(
+                confidence,
+                100
+            )}%`;
 
 
-            if (prediction === "1") {
+        confidenceSection.classList.remove(
+            "hidden"
+        );
 
-                predictionText =
-                    "🎉 Passenger is likely to Survive";
+    } else {
 
-                resultClass =
-                    "success";
-
-            }
-
-            else if (prediction === "0") {
-
-                predictionText =
-                    "⚠️ Passenger is likely to Not Survive";
-
-                resultClass =
-                    "warning";
-
-            }
-
-            else {
-
-                predictionText =
-                    `Prediction: ${prediction}`;
-
-                resultClass =
-                    "success";
-            }
+        confidenceSection.classList.add(
+            "hidden"
+        );
+    }
 
 
-            // ----------------------------------
-            // CONFIDENCE
-            // ----------------------------------
+    /* ------------------------------------------
+       PROBABILITIES
+       ------------------------------------------ */
 
-            let confidenceHTML = "";
-
-
-            if (
-                result.confidence !==
-                    undefined &&
-                result.confidence !== null
-            ) {
-
-                const confidence =
-                    Number(
-                        result.confidence
-                    );
+    displayProbabilities(
+        data.probabilities
+    );
+}
 
 
-                confidenceHTML = `
+/* ==========================================
+   DISPLAY PROBABILITIES
+   ========================================== */
 
-                    <div class="confidence">
+function displayProbabilities(
+    probabilities
+) {
 
+    const section =
+        document.getElementById(
+            "probabilitySection"
+        );
+
+    const list =
+        document.getElementById(
+            "probabilityList"
+        );
+
+
+    if (
+        !probabilities ||
+        Object.keys(
+            probabilities
+        ).length === 0
+    ) {
+
+        section.classList.add(
+            "hidden"
+        );
+
+        return;
+    }
+
+
+    list.innerHTML =
+        Object.entries(
+            probabilities
+        )
+        .map(
+            ([label, probability]) => {
+
+                let displayLabel =
+                    label;
+
+                if (label === "1") {
+                    displayLabel =
+                        "Survived";
+                }
+
+                if (label === "0") {
+                    displayLabel =
+                        "Not Survived";
+                }
+
+                return `
+                    <div class="probability-row">
                         <span>
-                            Confidence
+                            ${escapeHTML(
+                                displayLabel
+                            )}
                         </span>
 
                         <strong>
-                            ${confidence.toFixed(2)}%
+                            ${Number(
+                                probability
+                            ).toFixed(2)}%
                         </strong>
-
                     </div>
-
                 `;
             }
+        )
+        .join("");
 
 
-            // ----------------------------------
-            // DISPLAY RESULT
-            // ----------------------------------
-
-            resultBox.className =
-                `result ${resultClass}`;
+    section.classList.remove(
+        "hidden"
+    );
+}
 
 
-            resultBox.innerHTML = `
+/* ==========================================
+   HTML ESCAPE
+   ========================================== */
 
-                <h3>
-                    🎯 Prediction Result
-                </h3>
+function escapeHTML(value) {
 
-
-                <div class="prediction-main">
-
-                    <span>
-                        Predicted Value
-                    </span>
-
-                    <strong>
-                        ${prediction}
-                    </strong>
-
-                </div>
-
-
-                <p class="prediction-text">
-                    ${predictionText}
-                </p>
-
-
-                ${confidenceHTML}
-
-
-                <p class="success-note">
-                    Prediction generated successfully.
-                </p>
-
-            `;
-
-        }
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
 
 
-        catch (error) {
+/* ==========================================
+   NAVIGATION
+   ========================================== */
 
-            console.error(
-                "Prediction error:",
-                error
-            );
+document
+    .querySelectorAll(".nav-link")
+    .forEach(link => {
+
+        link.addEventListener(
+            "click",
+            () => {
+
+                document
+                    .querySelectorAll(
+                        ".nav-link"
+                    )
+                    .forEach(
+                        item =>
+                            item.classList.remove(
+                                "active"
+                            )
+                    );
+
+                link.classList.add(
+                    "active"
+                );
+            }
+        );
+
+    });
 
 
-            resultBox.className =
-                "result error";
+/* ==========================================
+   INITIALIZE
+   ========================================== */
 
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
-            resultBox.innerHTML = `
+        checkAPI();
 
-                <h3>
-                    ❌ Prediction Error
-                </h3>
-
-                <p>
-                    ${error.message}
-                </p>
-
-                <p class="success-note">
-                    Check that Flask is running and
-                    the model features match the
-                    submitted input.
-                </p>
-
-            `;
-
-        }
-
-
-        finally {
-
-            button.disabled = false;
-
-            button.textContent =
-                "🔮 Make Prediction";
-        }
+        loadModelDetails();
 
     }
 );
-
-
-// ==========================================
-// INITIALIZE
-// ==========================================
-
-loadModelInformation();
-
-checkAPIStatus();
