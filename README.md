@@ -65,8 +65,11 @@ K-Means Clustering
 | ReportLab | PDF report generation |
 | OpenPyXL | Excel file processing |
 
+---
+
 ## 📂 Project Structure
 
+```
 IntelliData-AI/
 │
 ├── app.py
@@ -110,6 +113,10 @@ IntelliData-AI/
     ├── preprocessing.py
     ├── regression.py
     └── report_generator.py
+
+```
+
+---
 
 ## ⚙️ Installation
 
@@ -178,6 +185,8 @@ Response:
 
 ## 🔄 Application Workflow
 
+```
+
 📁 Upload Dataset
         ↓
 🧹 Clean Data
@@ -196,6 +205,10 @@ Response:
         ↓
 📊 View Results on Dashboard
 
+```
+
+---
+
 ## 📄 Reports
 
 The Reports module generates a professional PDF containing:
@@ -209,6 +222,8 @@ AI-generated insights
 Latest prediction
 Prediction confidence
 
+---
+
 ## 🗄️ Database
 
 IntelliData AI maintains records for:
@@ -220,6 +235,8 @@ Prediction confidence
 Timestamps
 
 This information is displayed through the Database and Dashboard modules.
+
+---
 
 ## 🔐 Security
 
@@ -237,13 +254,17 @@ __pycache__/
 
 Do not commit API keys, credentials, tokens, or other sensitive information.
 
+---
+
 ## 🎯 Project Objective
 
 The objective of IntelliData AI is to provide a single platform for the complete data science workflow, from dataset upload and preprocessing to machine learning, prediction, insights, visualization, database tracking, REST API access, and automated reporting.
 
-**Author**
+---
 
-Iqra Khan
+## Author
+
+**Iqra Khan**
 
 Computer Engineering Student
 Python & Machine Learning Project
@@ -255,5 +276,7 @@ Status: Completed / Functional Prototype
 Project: IntelliData AI
 
 Primary Technologies: Python, Streamlit, Scikit-learn, Flask, SQLite
+
+---
 
 ⭐ If you find this project useful, feel free to explore the repository and give it a star!
