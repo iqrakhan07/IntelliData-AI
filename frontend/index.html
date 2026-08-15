@@ -1,541 +1,501 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>IntelliData AI</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
-
+    <link rel="stylesheet" href="/static/style.css">
 </head>
-
 
 <body>
 
-    <!-- ============================= -->
-    <!-- NAVBAR -->
-    <!-- ============================= -->
+    <div class="app">
 
-    <nav class="navbar">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
 
-        <div class="logo">
-            IntelliData <span>AI</span>
-        </div>
+            <div class="logo">
+                <div class="logo-icon">🤖</div>
 
-        <div class="nav-links">
-
-            <a href="#home">
-                Home
-            </a>
-
-            <a href="#prediction">
-                Prediction
-            </a>
-
-            <a href="#about">
-                About
-            </a>
-
-        </div>
-
-    </nav>
-
-
-    <!-- ============================= -->
-    <!-- HERO SECTION -->
-    <!-- ============================= -->
-
-    <section
-        class="hero"
-        id="home"
-    >
-
-        <div class="hero-content">
-
-            <p class="tag">
-                AI-POWERED DATA PLATFORM
-            </p>
-
-            <h1>
-                Turn Your Data Into
-                <span>Intelligence</span>
-            </h1>
-
-            <p class="hero-text">
-                IntelliData AI combines data analytics,
-                machine learning and intelligent prediction
-                into one powerful platform.
-            </p>
-
-            <a
-                href="#prediction"
-                class="hero-button"
-            >
-                Start Prediction
-            </a>
-
-        </div>
-
-    </section>
-
-
-    <!-- ============================= -->
-    <!-- FEATURES -->
-    <!-- ============================= -->
-
-    <section class="features">
-
-        <div class="feature-card">
-
-            <div class="feature-icon">
-                📊
+                <div>
+                    <h2>IntelliData</h2>
+                    <span>AI Platform</span>
+                </div>
             </div>
 
-            <h3>
-                Data Analytics
-            </h3>
+            <nav>
 
-            <p>
-                Analyze datasets and discover
-                meaningful patterns.
-            </p>
+                <a href="#" class="nav-item active">
+                    <span>📊</span>
+                    Dashboard
+                </a>
 
-        </div>
+                <a href="#prediction" class="nav-item">
+                    <span>🔮</span>
+                    Prediction
+                </a>
 
+                <a href="#model" class="nav-item">
+                    <span>🤖</span>
+                    Model
+                </a>
 
-        <div class="feature-card">
+            </nav>
 
-            <div class="feature-icon">
-                🤖
+            <div class="sidebar-bottom">
+                <p>Machine Learning</p>
+                <strong>IntelliData AI v1.0</strong>
             </div>
 
-            <h3>
-                Machine Learning
-            </h3>
-
-            <p>
-                Train and compare machine
-                learning models.
-            </p>
-
-        </div>
+        </aside>
 
 
-        <div class="feature-card">
+        <!-- MAIN CONTENT -->
+        <main class="main">
 
-            <div class="feature-icon">
-                🔮
-            </div>
+            <!-- TOP BAR -->
+            <header class="topbar">
 
-            <h3>
-                Smart Prediction
-            </h3>
+                <div>
+                    <h1>Dashboard</h1>
+                    <p>Smart Data Analytics & Machine Learning</p>
+                </div>
 
-            <p>
-                Generate predictions using
-                trained ML models.
-            </p>
+                <div class="status">
+                    <span class="status-dot"></span>
+                    API Connected
+                </div>
 
-        </div>
-
-
-        <div class="feature-card">
-
-            <div class="feature-icon">
-                📄
-            </div>
-
-            <h3>
-                Reports
-            </h3>
-
-            <p>
-                Generate professional
-                data analysis reports.
-            </p>
-
-        </div>
-
-    </section>
+            </header>
 
 
-    <!-- ============================= -->
-    <!-- PREDICTION SECTION -->
-    <!-- ============================= -->
+            <!-- KPI CARDS -->
+            <section class="cards">
 
-    <section
-        class="prediction-section"
-        id="prediction"
-    >
+                <div class="stat-card">
 
-        <div class="section-heading">
-
-            <p class="tag">
-                MACHINE LEARNING
-            </p>
-
-            <h2>
-                Titanic Survival Prediction
-            </h2>
-
-            <p>
-                Enter passenger information
-                to generate a prediction.
-            </p>
-
-        </div>
-
-
-        <div class="prediction-container">
-
-
-            <!-- FORM -->
-
-            <form id="predictionForm">
-
-
-                <div class="form-grid">
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Passenger ID
-                        </label>
-
-                        <input
-                            type="number"
-                            id="PassengerId"
-                            value="900"
-                            required
-                        >
-
+                    <div class="stat-icon blue">
+                        📁
                     </div>
 
-
-                    <div class="form-group">
-
-                        <label>
-                            Passenger Class
-                        </label>
-
-                        <select
-                            id="Pclass"
-                            required
-                        >
-
-                            <option value="1">
-                                First Class
-                            </option>
-
-                            <option
-                                value="2"
-                            >
-                                Second Class
-                            </option>
-
-                            <option
-                                value="3"
-                                selected
-                            >
-                                Third Class
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Name
-                        </label>
-
-                        <input
-                            type="text"
-                            id="Name"
-                            value="Test Passenger"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Gender
-                        </label>
-
-                        <select
-                            id="Gender"
-                            required
-                        >
-
-                            <option value="male">
-                                Male
-                            </option>
-
-                            <option value="female">
-                                Female
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Age
-                        </label>
-
-                        <input
-                            type="number"
-                            id="Age"
-                            value="25"
-                            step="0.1"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Siblings / Spouses
-                        </label>
-
-                        <input
-                            type="number"
-                            id="SibSp"
-                            value="0"
-                            min="0"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Parents / Children
-                        </label>
-
-                        <input
-                            type="number"
-                            id="Parch"
-                            value="0"
-                            min="0"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Ticket
-                        </label>
-
-                        <input
-                            type="text"
-                            id="Ticket"
-                            value="TEST123"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Fare
-                        </label>
-
-                        <input
-                            type="number"
-                            id="Fare"
-                            value="8.05"
-                            step="0.01"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Cabin
-                        </label>
-
-                        <input
-                            type="text"
-                            id="Cabin"
-                            value="Unknown"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Embarked
-                        </label>
-
-                        <select
-                            id="Embarked"
-                            required
-                        >
-
-                            <option value="S">
-                                Southampton
-                            </option>
-
-                            <option value="C">
-                                Cherbourg
-                            </option>
-
-                            <option value="Q">
-                                Queenstown
-                            </option>
-
-                        </select>
-
+                    <div>
+                        <p>Platform</p>
+                        <h3>IntelliData AI</h3>
                     </div>
 
                 </div>
 
 
-                <button
-                    type="submit"
-                    class="predict-button"
-                >
+                <div class="stat-card">
 
-                    🔮 Make Prediction
+                    <div class="stat-icon purple">
+                        🤖
+                    </div>
 
-                </button>
+                    <div>
+                        <p>Model</p>
+                        <h3 id="model-name">
+                            Loading...
+                        </h3>
+                    </div>
 
-            </form>
+                </div>
 
 
-            <!-- RESULT -->
+                <div class="stat-card">
 
-            <div
-                class="result-card"
-                id="resultCard"
+                    <div class="stat-icon green">
+                        🎯
+                    </div>
+
+                    <div>
+                        <p>Prediction</p>
+                        <h3>Ready</h3>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon orange">
+                        ⚡
+                    </div>
+
+                    <div>
+                        <p>API Status</p>
+                        <h3 id="api-status">
+                            Checking...
+                        </h3>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- PREDICTION SECTION -->
+            <section
+                class="content-card"
+                id="prediction"
             >
 
-                <div class="result-icon">
-                    🤖
+                <div class="section-header">
+
+                    <div>
+                        <h2>🔮 Passenger Prediction</h2>
+
+                        <p>
+                            Enter passenger information
+                            to generate a survival prediction.
+                        </p>
+                    </div>
+
                 </div>
 
-                <h3>
-                    Prediction Result
-                </h3>
 
-                <p id="resultMessage">
-                    Enter passenger information
-                    and click Make Prediction.
-                </p>
+                <form id="prediction-form">
 
+                    <div class="form-grid">
+
+
+                        <!-- Passenger ID -->
+                        <div class="form-group">
+
+                            <label for="PassengerId">
+                                Passenger ID
+                            </label>
+
+                            <input
+                                type="number"
+                                id="PassengerId"
+                                value="900"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Pclass -->
+                        <div class="form-group">
+
+                            <label for="Pclass">
+                                Passenger Class
+                            </label>
+
+                            <select
+                                id="Pclass"
+                                required
+                            >
+
+                                <option value="1">
+                                    1 - First Class
+                                </option>
+
+                                <option value="2">
+                                    2 - Second Class
+                                </option>
+
+                                <option
+                                    value="3"
+                                    selected
+                                >
+                                    3 - Third Class
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Name -->
+                        <div
+                            class="form-group full"
+                        >
+
+                            <label for="Name">
+                                Passenger Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="Name"
+                                value="Test Passenger"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Gender -->
+                        <div class="form-group">
+
+                            <label for="Gender">
+                                Gender
+                            </label>
+
+                            <select
+                                id="Gender"
+                                required
+                            >
+
+                                <option
+                                    value="male"
+                                    selected
+                                >
+                                    Male
+                                </option>
+
+                                <option value="female">
+                                    Female
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Age -->
+                        <div class="form-group">
+
+                            <label for="Age">
+                                Age
+                            </label>
+
+                            <input
+                                type="number"
+                                id="Age"
+                                value="25"
+                                min="0"
+                                max="100"
+                                step="0.1"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- SibSp -->
+                        <div class="form-group">
+
+                            <label for="SibSp">
+                                Siblings / Spouses
+                            </label>
+
+                            <input
+                                type="number"
+                                id="SibSp"
+                                value="0"
+                                min="0"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Parch -->
+                        <div class="form-group">
+
+                            <label for="Parch">
+                                Parents / Children
+                            </label>
+
+                            <input
+                                type="number"
+                                id="Parch"
+                                value="0"
+                                min="0"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Ticket -->
+                        <div class="form-group">
+
+                            <label for="Ticket">
+                                Ticket
+                            </label>
+
+                            <input
+                                type="text"
+                                id="Ticket"
+                                value="TEST123"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Fare -->
+                        <div class="form-group">
+
+                            <label for="Fare">
+                                Fare
+                            </label>
+
+                            <input
+                                type="number"
+                                id="Fare"
+                                value="8.05"
+                                min="0"
+                                step="0.01"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Cabin -->
+                        <div class="form-group">
+
+                            <label for="Cabin">
+                                Cabin
+                            </label>
+
+                            <input
+                                type="text"
+                                id="Cabin"
+                                value="Unknown"
+                            >
+
+                        </div>
+
+
+                        <!-- Embarked -->
+                        <div class="form-group">
+
+                            <label for="Embarked">
+                                Embarked
+                            </label>
+
+                            <select
+                                id="Embarked"
+                                required
+                            >
+
+                                <option
+                                    value="S"
+                                    selected
+                                >
+                                    Southampton (S)
+                                </option>
+
+                                <option value="C">
+                                    Cherbourg (C)
+                                </option>
+
+                                <option value="Q">
+                                    Queenstown (Q)
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="predict-btn"
+                    >
+                        🔮 Make Prediction
+                    </button>
+
+                </form>
+
+
+                <!-- RESULT -->
                 <div
-                    class="result-value"
-                    id="predictionValue"
-                >
-                    --
+                    id="result"
+                    class="result hidden"
+                ></div>
+
+            </section>
+
+
+            <!-- MODEL SECTION -->
+            <section
+                class="content-card"
+                id="model"
+            >
+
+                <div class="section-header">
+
+                    <div>
+                        <h2>🤖 Model Information</h2>
+
+                        <p>
+                            Information about the currently
+                            loaded machine learning model.
+                        </p>
+                    </div>
+
                 </div>
 
-                <div
-                    class="confidence"
-                    id="confidenceValue"
-                >
-                    Confidence: --
+
+                <div class="model-grid">
+
+                    <div class="model-item">
+
+                        <span>Model Type</span>
+
+                        <strong id="model-type">
+                            Loading...
+                        </strong>
+
+                    </div>
+
+
+                    <div class="model-item">
+
+                        <span>Prediction Probability</span>
+
+                        <strong id="probability-status">
+                            Loading...
+                        </strong>
+
+                    </div>
+
+
+                    <div class="model-item">
+
+                        <span>Features</span>
+
+                        <strong id="feature-count">
+                            Loading...
+                        </strong>
+
+                    </div>
+
                 </div>
 
-                <div
-                    class="loading"
-                    id="loading"
-                >
-                    Processing...
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
+            </section>
 
 
-    <!-- ============================= -->
-    <!-- ABOUT -->
-    <!-- ============================= -->
+            <!-- FOOTER -->
+            <footer>
 
-    <section
-        class="about"
-        id="about"
-    >
+                <span>
+                    © 2026 IntelliData AI
+                </span>
 
-        <p class="tag">
-            ABOUT THE PROJECT
-        </p>
+                <span>
+                    Smart Data Analytics & Machine Learning Platform
+                </span>
 
-        <h2>
-            IntelliData AI
-        </h2>
+            </footer>
 
-        <p>
+        </main>
 
-            An integrated data science and machine
-            learning platform built using Python,
-            Pandas, Scikit-learn, Streamlit,
-            Flask, SQL, HTML, CSS and JavaScript.
-
-        </p>
-
-    </section>
+    </div>
 
 
-    <!-- ============================= -->
-    <!-- FOOTER -->
-    <!-- ============================= -->
-
-    <footer>
-
-        <p>
-            © 2026 IntelliData AI
-        </p>
-
-        <p>
-            Built with Python & Machine Learning
-        </p>
-
-    </footer>
-
-
-    <script
-        src="script.js"
-    ></script>
+    <script src="/static/script.js"></script>
 
 </body>
-
 </html>

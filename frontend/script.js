@@ -1,50 +1,165 @@
-const predictionForm =
-    document.getElementById(
-        "predictionForm"
-    );
+const form =
+    document.getElementById("prediction-form");
+
+const resultBox =
+    document.getElementById("result");
 
 
-const resultCard =
-    document.getElementById(
-        "resultCard"
-    );
+// ==========================================
+// LOAD MODEL INFORMATION
+// ==========================================
+
+async function loadModelInformation() {
+
+    try {
+
+        const response =
+            await fetch("/model-details");
+
+        const data =
+            await response.json();
 
 
-const resultMessage =
-    document.getElementById(
-        "resultMessage"
-    );
+        if (
+            response.ok &&
+            data.status === "success"
+        ) {
+
+            document.getElementById(
+                "model-type"
+            ).textContent =
+                data.model_type || "Unknown";
 
 
-const predictionValue =
-    document.getElementById(
-        "predictionValue"
-    );
+            document.getElementById(
+                "model-name"
+            ).textContent =
+                "best_model.pkl";
 
 
-const confidenceValue =
-    document.getElementById(
-        "confidenceValue"
-    );
+            document.getElementById(
+                "probability-status"
+            ).textContent =
+                data.has_predict_proba
+                    ? "Available"
+                    : "Not Available";
 
 
-const loading =
-    document.getElementById(
-        "loading"
-    );
+            document.getElementById(
+                "feature-count"
+            ).textContent =
+                data.features
+                    ? `${data.features.length} Features`
+                    : "Unknown";
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Model information error:",
+            error
+        );
+
+        document.getElementById(
+            "model-type"
+        ).textContent =
+            "Unavailable";
+
+        document.getElementById(
+            "model-name"
+        ).textContent =
+            "Unavailable";
+    }
+}
 
 
+// ==========================================
+// CHECK API STATUS
+// ==========================================
 
-predictionForm.addEventListener(
+async function checkAPIStatus() {
+
+    try {
+
+        const response =
+            await fetch("/health");
+
+        const data =
+            await response.json();
+
+
+        const status =
+            document.getElementById(
+                "api-status"
+            );
+
+
+        if (
+            response.ok &&
+            data.status === "healthy"
+        ) {
+
+            status.textContent =
+                data.model_available
+                    ? "Online"
+                    : "No Model";
+
+        } else {
+
+            status.textContent =
+                "Offline";
+        }
+
+    } catch (error) {
+
+        document.getElementById(
+            "api-status"
+        ).textContent =
+            "Offline";
+    }
+}
+
+
+// ==========================================
+// PREDICTION
+// ==========================================
+
+form.addEventListener(
     "submit",
     async function (event) {
 
         event.preventDefault();
 
 
-        // ==============================
-        // GET FORM VALUES
-        // ==============================
+        const button =
+            form.querySelector(
+                ".predict-btn"
+            );
+
+
+        button.disabled = true;
+
+        button.textContent =
+            "⏳ Making Prediction...";
+
+
+        resultBox.className =
+            "result loading";
+
+
+        resultBox.innerHTML = `
+            <h3>⏳ Processing Prediction</h3>
+            <p>
+                Please wait while IntelliData AI
+                processes the passenger information.
+            </p>
+        `;
+
+
+        // --------------------------------------
+        // INPUT DATA
+        // --------------------------------------
 
         const data = {
 
@@ -65,6 +180,8 @@ predictionForm.addEventListener(
                     "Name"
                 ).value,
 
+            // IMPORTANT:
+            // Your dataset uses Gender
             Gender:
                 document.getElementById(
                     "Gender"
@@ -111,34 +228,22 @@ predictionForm.addEventListener(
         };
 
 
-        // ==============================
-        // SHOW LOADING
-        // ==============================
+        console.log(
+            "Prediction input:",
+            data
+        );
 
-        loading.style.display =
-            "block";
 
-        predictionValue.textContent =
-            "--";
-
-        confidenceValue.textContent =
-            "Confidence: --";
-
-        resultMessage.textContent =
-            "Sending data to ML model...";
-
+        // --------------------------------------
+        // CALL FLASK API
+        // --------------------------------------
 
         try {
 
-            // ==============================
-            // SEND REQUEST TO FLASK
-            // ==============================
-
             const response =
                 await fetch(
-                    "http://127.0.0.1:5000/predict",
+                    "/predict",
                     {
-
                         method: "POST",
 
                         headers: {
@@ -156,74 +261,200 @@ predictionForm.addEventListener(
                 await response.json();
 
 
-            // ==============================
-            // HANDLE ERROR
-            // ==============================
+            console.log(
+                "Prediction response:",
+                result
+            );
 
-            if (!response.ok) {
+
+            if (
+                !response.ok ||
+                result.status === "error"
+            ) {
 
                 throw new Error(
                     result.message ||
                     "Prediction failed."
                 );
-
             }
 
 
-            // ==============================
-            // DISPLAY RESULT
-            // ==============================
+            // ----------------------------------
+            // PREDICTION
+            // ----------------------------------
 
-            predictionValue.textContent =
-                result.prediction;
+            const prediction =
+                String(
+                    result.prediction
+                );
 
 
-            resultMessage.textContent =
-                "Prediction generated successfully.";
+            let predictionText;
+
+            let resultClass;
+
+
+            if (prediction === "1") {
+
+                predictionText =
+                    "🎉 Passenger is likely to Survive";
+
+                resultClass =
+                    "success";
+
+            }
+
+            else if (prediction === "0") {
+
+                predictionText =
+                    "⚠️ Passenger is likely to Not Survive";
+
+                resultClass =
+                    "warning";
+
+            }
+
+            else {
+
+                predictionText =
+                    `Prediction: ${prediction}`;
+
+                resultClass =
+                    "success";
+            }
+
+
+            // ----------------------------------
+            // CONFIDENCE
+            // ----------------------------------
+
+            let confidenceHTML = "";
 
 
             if (
                 result.confidence !==
-                undefined
+                    undefined &&
+                result.confidence !== null
             ) {
 
-                confidenceValue.textContent =
-                    `Confidence: ${
+                const confidence =
+                    Number(
                         result.confidence
-                    }%`;
+                    );
 
+
+                confidenceHTML = `
+
+                    <div class="confidence">
+
+                        <span>
+                            Confidence
+                        </span>
+
+                        <strong>
+                            ${confidence.toFixed(2)}%
+                        </strong>
+
+                    </div>
+
+                `;
             }
 
 
+            // ----------------------------------
+            // DISPLAY RESULT
+            // ----------------------------------
+
+            resultBox.className =
+                `result ${resultClass}`;
+
+
+            resultBox.innerHTML = `
+
+                <h3>
+                    🎯 Prediction Result
+                </h3>
+
+
+                <div class="prediction-main">
+
+                    <span>
+                        Predicted Value
+                    </span>
+
+                    <strong>
+                        ${prediction}
+                    </strong>
+
+                </div>
+
+
+                <p class="prediction-text">
+                    ${predictionText}
+                </p>
+
+
+                ${confidenceHTML}
+
+
+                <p class="success-note">
+                    Prediction generated successfully.
+                </p>
+
+            `;
+
         }
+
 
         catch (error) {
 
             console.error(
+                "Prediction error:",
                 error
             );
 
 
-            resultMessage.textContent =
-                "Unable to connect to the Flask API.";
+            resultBox.className =
+                "result error";
 
 
-            predictionValue.textContent =
-                "Error";
+            resultBox.innerHTML = `
 
+                <h3>
+                    ❌ Prediction Error
+                </h3>
 
-            confidenceValue.textContent =
-                error.message;
+                <p>
+                    ${error.message}
+                </p>
+
+                <p class="success-note">
+                    Check that Flask is running and
+                    the model features match the
+                    submitted input.
+                </p>
+
+            `;
 
         }
 
 
         finally {
 
-            loading.style.display =
-                "none";
+            button.disabled = false;
 
+            button.textContent =
+                "🔮 Make Prediction";
         }
 
     }
 );
+
+
+// ==========================================
+// INITIALIZE
+// ==========================================
+
+loadModelInformation();
+
+checkAPIStatus();

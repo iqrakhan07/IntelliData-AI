@@ -1,4 +1,10 @@
-from flask import Flask, jsonify, request
+from flask import (
+    Flask,
+    jsonify,
+    request,
+    send_from_directory
+)
+
 from flask_cors import CORS
 
 import os
@@ -7,22 +13,42 @@ import pandas as pd
 
 
 # ==================================================
-# APP CONFIGURATION
+# PATHS
 # ==================================================
 
-app = Flask(__name__)
-
-CORS(app)
-
+BASE_DIR = os.path.dirname(
+    os.path.dirname(
+        os.path.abspath(__file__)
+    )
+)
 
 MODEL_PATH = os.path.join(
+    BASE_DIR,
     "models",
     "best_model.pkl"
 )
 
+FRONTEND_DIR = os.path.join(
+    BASE_DIR,
+    "frontend"
+)
+
 
 # ==================================================
-# HOME
+# FLASK APP
+# ==================================================
+
+app = Flask(
+    __name__,
+    static_folder=FRONTEND_DIR,
+    static_url_path="/static"
+)
+
+CORS(app)
+
+
+# ==================================================
+# HOME / API STATUS
 # ==================================================
 
 @app.route("/", methods=["GET"])
@@ -31,8 +57,29 @@ def home():
     return jsonify({
         "application": "IntelliData AI",
         "status": "running",
-        "message": "IntelliData AI REST API"
+        "message": "IntelliData AI REST API",
+        "frontend": "/app",
+        "endpoints": {
+            "health": "/health",
+            "model": "/model",
+            "features": "/features",
+            "model_details": "/model-details",
+            "prediction": "/predict"
+        }
     })
+
+
+# ==================================================
+# FLASK FRONTEND
+# ==================================================
+
+@app.route("/app", methods=["GET"])
+def frontend():
+
+    return send_from_directory(
+        FRONTEND_DIR,
+        "index.html"
+    )
 
 
 # ==================================================
@@ -66,10 +113,28 @@ def model_info():
             "message": "No trained model found."
         }), 404
 
-    return jsonify({
-        "status": "success",
-        "model": "best_model.pkl"
-    })
+    try:
+
+        model = joblib.load(
+            MODEL_PATH
+        )
+
+        return jsonify({
+            "status": "success",
+            "model": "best_model.pkl",
+            "model_type": type(model).__name__,
+            "has_predict_proba": hasattr(
+                model,
+                "predict_proba"
+            )
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
 
 
 # ==================================================
@@ -78,6 +143,79 @@ def model_info():
 
 @app.route("/features", methods=["GET"])
 def features():
+
+    if not os.path.exists(MODEL_PATH):
+
+        return jsonify({
+            "status": "error",
+            "message": "Model not found."
+        }), 404
+
+    try:
+
+        model = joblib.load(
+            MODEL_PATH
+        )
+
+        feature_names = None
+
+        # ------------------------------------------
+        # Pipeline feature names
+        # ------------------------------------------
+
+        if hasattr(
+            model,
+            "feature_names_in_"
+        ):
+
+            feature_names = (
+                model.feature_names_in_.tolist()
+            )
+
+        # ------------------------------------------
+        # Pipeline fallback
+        # ------------------------------------------
+
+        elif hasattr(
+            model,
+            "named_steps"
+        ):
+
+            for step in model.named_steps.values():
+
+                if hasattr(
+                    step,
+                    "feature_names_in_"
+                ):
+
+                    feature_names = (
+                        step.feature_names_in_.tolist()
+                    )
+
+                    break
+
+        return jsonify({
+            "status": "success",
+            "features": feature_names
+        })
+
+    except Exception as e:
+
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+
+
+# ==================================================
+# MODEL DETAILS
+# ==================================================
+
+@app.route(
+    "/model-details",
+    methods=["GET"]
+)
+def model_details():
 
     if not os.path.exists(MODEL_PATH):
 
@@ -103,58 +241,40 @@ def features():
                 model.feature_names_in_.tolist()
             )
 
-        return jsonify({
-            "status": "success",
-            "features": feature_names
-        })
-
-    except Exception as e:
-
-        return jsonify({
-            "status": "error",
-            "message": str(e)
-        }), 500
-
-
-# ==================================================
-# MODEL DETAILS
-# ==================================================
-
-@app.route("/model-details", methods=["GET"])
-def model_details():
-
-    if not os.path.exists(MODEL_PATH):
-
-        return jsonify({
-            "status": "error",
-            "message": "Model not found."
-        }), 404
-
-    try:
-
-        model = joblib.load(
-            MODEL_PATH
-        )
-
-        features = None
-
-        if hasattr(
+        elif hasattr(
             model,
-            "feature_names_in_"
+            "named_steps"
         ):
 
-            features = (
-                model.feature_names_in_.tolist()
-            )
+            for step in model.named_steps.values():
+
+                if hasattr(
+                    step,
+                    "feature_names_in_"
+                ):
+
+                    feature_names = (
+                        step.feature_names_in_.tolist()
+                    )
+
+                    break
 
         return jsonify({
+
             "status": "success",
-            "model_type": type(model).__name__,
-            "has_predict_proba": hasattr(
-                model,
-                "predict_proba"
-            ),
-            "features": features
+
+            "model_type":
+                type(model).__name__,
+
+            "has_predict_proba":
+                hasattr(
+                    model,
+                    "predict_proba"
+                ),
+
+            "features":
+                feature_names
+
         })
 
     except Exception as e:
@@ -169,8 +289,15 @@ def model_details():
 # PREDICTION
 # ==================================================
 
-@app.route("/predict", methods=["POST"])
+@app.route(
+    "/predict",
+    methods=["POST"]
+)
 def predict():
+
+    # ----------------------------------------------
+    # CHECK MODEL
+    # ----------------------------------------------
 
     if not os.path.exists(MODEL_PATH):
 
@@ -185,7 +312,9 @@ def predict():
         # GET JSON DATA
         # ------------------------------------------
 
-        data = request.get_json()
+        data = request.get_json(
+            silent=True
+        )
 
         if not data:
 
@@ -217,6 +346,8 @@ def predict():
         # GET EXPECTED FEATURES
         # ------------------------------------------
 
+        expected_features = None
+
         if hasattr(
             model,
             "feature_names_in_"
@@ -225,6 +356,31 @@ def predict():
             expected_features = (
                 model.feature_names_in_.tolist()
             )
+
+        elif hasattr(
+            model,
+            "named_steps"
+        ):
+
+            for step in model.named_steps.values():
+
+                if hasattr(
+                    step,
+                    "feature_names_in_"
+                ):
+
+                    expected_features = (
+                        step.feature_names_in_.tolist()
+                    )
+
+                    break
+
+
+        # ------------------------------------------
+        # VALIDATE FEATURES
+        # ------------------------------------------
+
+        if expected_features:
 
             missing_features = [
                 feature
@@ -236,9 +392,20 @@ def predict():
 
                 return jsonify({
                     "status": "error",
-                    "message": "Missing input features.",
-                    "missing_features": missing_features
+                    "message": (
+                        "Missing required features."
+                    ),
+                    "missing_features":
+                        missing_features,
+                    "expected_features":
+                        expected_features,
+                    "received_features":
+                        input_data.columns.tolist()
                 }), 400
+
+
+            # Keep exactly the model's
+            # expected column order.
 
             input_data = input_data[
                 expected_features
@@ -257,19 +424,21 @@ def predict():
 
 
         # ------------------------------------------
-        # BASE RESPONSE
+        # RESPONSE
         # ------------------------------------------
 
         response = {
-            "status": "success",
-            "prediction": int(result)
-            if str(result).isdigit()
-            else str(result)
+
+            "status":
+                "success",
+
+            "prediction":
+                str(result)
         }
 
 
         # ------------------------------------------
-        # PROBABILITY / CONFIDENCE
+        # CONFIDENCE
         # ------------------------------------------
 
         if hasattr(
@@ -277,65 +446,74 @@ def predict():
             "predict_proba"
         ):
 
-            probabilities = model.predict_proba(
-                input_data
-            )[0]
-
-
-            classes = model.classes_
-
-
-            predicted_index = list(
-                classes
-            ).index(result)
-
-
-            probability = (
-                probabilities[
-                    predicted_index
-                ] * 100
+            probabilities = (
+                model.predict_proba(
+                    input_data
+                )[0]
             )
 
+            confidence = (
+                max(probabilities) * 100
+            )
 
             response[
                 "confidence"
             ] = round(
-                float(probability),
+                float(confidence),
                 2
             )
 
 
             # --------------------------------------
-            # TITANIC LABEL
+            # PROBABILITIES
             # --------------------------------------
 
-            if result == 1:
+            if hasattr(
+                model,
+                "classes_"
+            ):
+
+                classes = (
+                    model.classes_
+                )
 
                 response[
-                    "prediction_label"
-                ] = "Survived"
+                    "probabilities"
+                ] = {
 
-            elif result == 0:
+                    str(cls):
+                        round(
+                            float(prob) * 100,
+                            2
+                        )
 
-                response[
-                    "prediction_label"
-                ] = "Not Survived"
+                    for cls, prob
+                    in zip(
+                        classes,
+                        probabilities
+                    )
+                }
 
-
-        # ------------------------------------------
-        # RETURN RESPONSE
-        # ------------------------------------------
 
         return jsonify(
             response
         )
 
 
+    # ----------------------------------------------
+    # ERROR HANDLING
+    # ----------------------------------------------
+
     except Exception as e:
 
         return jsonify({
-            "status": "error",
-            "message": str(e)
+
+            "status":
+                "error",
+
+            "message":
+                str(e)
+
         }), 500
 
 
@@ -344,6 +522,22 @@ def predict():
 # ==================================================
 
 if __name__ == "__main__":
+
+    print()
+    print("=" * 55)
+    print("🤖 IntelliData AI Flask API")
+    print("=" * 55)
+    print(
+        f"📁 Model: {MODEL_PATH}"
+    )
+    print(
+        f"🌐 Frontend: http://127.0.0.1:5000/app"
+    )
+    print(
+        f"🔌 API: http://127.0.0.1:5000/"
+    )
+    print("=" * 55)
+    print()
 
     app.run(
         host="127.0.0.1",
