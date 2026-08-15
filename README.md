@@ -122,7 +122,7 @@ IntelliData-AI/
 
 ### Clone the repository:
 
-git clone https://github.com/YOUR_USERNAME/IntelliData-AI.git
+git clone https://github.com/iqrakhan07/IntelliData-AI.git
 
 Move into the project directory:
 
