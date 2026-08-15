@@ -65,9 +65,9 @@ predictionForm.addEventListener(
                     "Name"
                 ).value,
 
-            Sex:
+            Gender:
                 document.getElementById(
-                    "Sex"
+                    "Gender"
                 ).value,
 
             Age: Number(
